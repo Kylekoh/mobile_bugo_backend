@@ -25,7 +25,8 @@ router.get("/login/failed", (req, res) => {
 
 router.get("/logout", (req, res) => {
   req.logout();
-  res.redirect(CLIENT_URL);
+  res.json({ message: "Successfully logged out" });
+  // res.redirect(CLIENT_URL);
 });
 
 router.get("/kakao", passport.authenticate("kakao"));
