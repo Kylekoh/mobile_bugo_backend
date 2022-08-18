@@ -11,6 +11,7 @@ const {
   GraphQLSchema,
   GraphQLNonNull,
 } = require("graphql");
+const User = require("../models/User");
 
 const dateType = new GraphQLScalarType({
   name: "Date",
@@ -33,7 +34,7 @@ const BugoDataType = new GraphQLObjectType({
       type: GraphQLString,
     },
     age: {
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     mourner: {
       type: GraphQLString,
@@ -42,6 +43,9 @@ const BugoDataType = new GraphQLObjectType({
       type: GraphQLString,
     },
     binso: {
+      type: GraphQLString,
+    },
+    jangJi: {
       type: GraphQLString,
     },
     funeralAddress: {
@@ -62,19 +66,46 @@ const BugoDataType = new GraphQLObjectType({
     accountNumber: {
       type: GraphQLString,
     },
+    userId: {
+      type: UserType,
+      resolve(parent, args) {
+        console.log("패런츠 값은??", parent);
+        return User.findById(parent.userId);
+      },
+    },
   }),
 });
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
-    bugoDatas: {
+    bugodatas: {
       type: new GraphQLList(BugoDataType),
       resolve(parent, args) {
         return BugoData.find();
       },
     },
+    bugodata: {
+      type: BugoDataType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return BugoData.findById(args.id);
+      },
+    },
   },
+});
+
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: () => ({
+    id: { type: GraphQLID },
+    snsId: { type: GraphQLString },
+    email: { type: GraphQLString },
+    nickName: { type: GraphQLString },
+    avatarUrl: { type: GraphQLString },
+    ageRange: { type: GraphQLString },
+    provider: { type: GraphQLString },
+  }),
 });
 
 //Mutations
@@ -88,7 +119,7 @@ const mutation = new GraphQLObjectType({
           type: GraphQLNonNull(GraphQLString),
         },
         age: {
-          type: GraphQLNonNull(GraphQLInt),
+          type: GraphQLNonNull(GraphQLString),
         },
         mourner: {
           type: GraphQLNonNull(GraphQLString),
@@ -101,6 +132,9 @@ const mutation = new GraphQLObjectType({
         },
         funeralAddress: {
           type: GraphQLNonNull(GraphQLString),
+        },
+        jangJi: {
+          type: GraphQLString,
         },
         imJongDate: {
           type: GraphQLNonNull(dateType),
@@ -125,6 +159,7 @@ const mutation = new GraphQLObjectType({
           mourner: args.mourner,
           funeralHall: args.funeralHall,
           binso: args.binso,
+          jangJi: args.jangJi,
           funeralAddress: args.funeralAddress,
           imJongDate: args.imJongDate,
           balInDate: args.balInDate,
@@ -133,6 +168,46 @@ const mutation = new GraphQLObjectType({
           accountNumber: args.accountNumber,
         });
         return bugoData.save();
+      },
+    },
+    updateBugoData: {
+      type: BugoDataType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+        latePersonName: { type: GraphQLString },
+        age: { type: GraphQLString },
+        mourner: { type: GraphQLString },
+        funeralHall: { type: GraphQLString },
+        binso: { type: GraphQLString },
+        funeralAddress: { type: GraphQLString },
+        jangJi: { type: GraphQLString },
+        imJongDate: { type: dateType },
+        balInDate: { type: dateType },
+        accountHolder: { type: GraphQLString },
+        bankName: { type: GraphQLString },
+        accountNumber: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        return BugoData.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              latePersonName: args.latePersonName,
+              age: args.age,
+              mourner: args.mourner,
+              funeralHall: args.funeralHall,
+              binso: args.binso,
+              funeralAddress: args.funeralAddress,
+              jangJi: args.jangJi,
+              imJongDate: args.imJongDate,
+              balInDate: args.balInDate,
+              accountHolder: args.accountHolder,
+              bankName: args.bankName,
+              accountNumber: args.accountNumber,
+            },
+          },
+          { new: true }
+        );
       },
     },
   },

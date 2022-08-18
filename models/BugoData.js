@@ -5,7 +5,7 @@ const BugoDataScehma = new mongoose.Schema({
     type: String,
   },
   age: {
-    type: Number,
+    type: String,
   },
   mourner: {
     type: String,
@@ -16,26 +16,17 @@ const BugoDataScehma = new mongoose.Schema({
   binso: {
     type: String,
   },
+  jangJi: {
+    type: String,
+  },
   funeralAddress: {
     type: String,
   },
   imJongDate: {
     type: Date,
   },
-  imJongTime: {
-    type: Number,
-  },
-  imJongMinute: {
-    type: Number,
-  },
   balInDate: {
     type: Date,
-  },
-  balInTime: {
-    type: Number,
-  },
-  balInMinute: {
-    type: Number,
   },
   accountHolder: {
     type: String,
@@ -45,6 +36,11 @@ const BugoDataScehma = new mongoose.Schema({
   },
   accountNumber: {
     type: String,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
   },
 });
 
