@@ -20,6 +20,10 @@ const UserScehma = new mongoose.Schema(
     provider: {
       type: String,
     },
+    // bugoDatas: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "BugoData",
+    // },
   },
   {
     timestamps: true,

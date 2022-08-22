@@ -66,13 +66,35 @@ const BugoDataType = new GraphQLObjectType({
     accountNumber: {
       type: GraphQLString,
     },
-    userId: {
+    user: {
       type: UserType,
       resolve(parent, args) {
-        console.log("패런츠 값은??", parent);
+        console.log("패런트", parent);
         return User.findById(parent.userId);
       },
     },
+    createdAt: {
+      type: GraphQLString,
+    },
+  }),
+});
+
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: () => ({
+    id: { type: GraphQLID },
+    snsId: { type: GraphQLString },
+    email: { type: GraphQLString },
+    nickName: { type: GraphQLString },
+    avatarUrl: { type: GraphQLString },
+    ageRange: { type: GraphQLString },
+    provider: { type: GraphQLString },
+    // bugoDatas: {
+    //   type: Gr BugoDataType,
+    //   resolve(parent, args) {
+    //     return BugoData.findById(args.id);
+    //   },
+    // },
   }),
 });
 
@@ -92,20 +114,21 @@ const RootQuery = new GraphQLObjectType({
         return BugoData.findById(args.id);
       },
     },
+    user: {
+      type: UserType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return User.findById(args.id);
+      },
+    },
+    bugodatasByUser: {
+      type: new GraphQLList(BugoDataType),
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return BugoData.find({ userId: args.id });
+      },
+    },
   },
-});
-
-const UserType = new GraphQLObjectType({
-  name: "User",
-  fields: () => ({
-    id: { type: GraphQLID },
-    snsId: { type: GraphQLString },
-    email: { type: GraphQLString },
-    nickName: { type: GraphQLString },
-    avatarUrl: { type: GraphQLString },
-    ageRange: { type: GraphQLString },
-    provider: { type: GraphQLString },
-  }),
 });
 
 //Mutations
@@ -151,6 +174,9 @@ const mutation = new GraphQLObjectType({
         accountNumber: {
           type: GraphQLNonNull(GraphQLString),
         },
+        userId: {
+          type: GraphQLNonNull(GraphQLID),
+        },
       },
       resolve(parent, args) {
         const bugoData = new BugoData({
@@ -166,6 +192,7 @@ const mutation = new GraphQLObjectType({
           accountHolder: args.accountHolder,
           bankName: args.bankName,
           accountNumber: args.accountNumber,
+          userId: args.userId,
         });
         return bugoData.save();
       },
