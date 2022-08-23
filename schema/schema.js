@@ -69,7 +69,6 @@ const BugoDataType = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        console.log("패런트", parent);
         return User.findById(parent.userId);
       },
     },
@@ -201,6 +200,9 @@ const mutation = new GraphQLObjectType({
       type: BugoDataType,
       args: {
         id: { type: GraphQLNonNull(GraphQLID) },
+        userId: {
+          type: GraphQLID,
+        },
         latePersonName: { type: GraphQLString },
         age: { type: GraphQLString },
         mourner: { type: GraphQLString },
